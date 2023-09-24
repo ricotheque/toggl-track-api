@@ -43,3 +43,4 @@ console.log(projects2)
 | Projects           |        | ✓        | ✓        |        |        |
 | Clients            |        | ✓        | ✓        |        |        |
 | Organization Users |        | ✓        |          |        |        |
+| Tags               | ✓      | ✓        | ✓        |        | ✓      |
