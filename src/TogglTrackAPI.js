@@ -15,8 +15,6 @@ export class TogglTrackAPI extends TogglEmitter {
       cache
     } = options
 
-    console.log(options)
-
     this.apiToken = apiToken
     this.workspaceId = workspaceId
     this.organizationId = organizationId
@@ -49,7 +47,7 @@ export class TogglTrackAPI extends TogglEmitter {
       )
     }
 
-    // Return cached data if it exists
+    // For GET and POST requests, return cached data if it exists
     const workspaceId = this.workspaceId
     const organizationId = this.organizationId
     const cacheKey = this.cache.makeHash({
@@ -60,12 +58,12 @@ export class TogglTrackAPI extends TogglEmitter {
       workspaceId,
       organizationId
     })
-    if (this.cache.has(sourceFunctionName, cacheKey)) {
-      return this.cache.get(sourceFunctionName, cacheKey)
-    }
 
-    // Delay requests to minimize 429 errors
-    await sleep(this.waitInMilliseconds)
+    if (method === 'GET' || method === 'POST') {
+      if (this.cache.has(sourceFunctionName, cacheKey)) {
+        return this.cache.get(sourceFunctionName, cacheKey)
+      }
+    }
 
     const headers = new Headers({
       Authorization: 'Basic ' + btoa(this.apiToken + ':api_token')
@@ -81,27 +79,34 @@ export class TogglTrackAPI extends TogglEmitter {
     const requestUrl = await this.resolveUrl(endpoint)
     let retries = 0
 
-    while (retries < this.maxRetries) {
+    while (true) {
+      // Delay requests to minimize 429 errors
+      await sleep(this.waitInMilliseconds)
+
       try {
         const response = await fetch(requestUrl, options)
 
         if (!response.ok) {
           if (
             this.retryCodes.includes(response.status) &&
-            retries < this.maxRetries
+            retries < this.maxRetries - 1
           ) {
             retries++
-            await sleep(this.retryDelayInMilliseconds)
             continue
-          }
+          } else {
+            const errorDetails = await response.text()
+            let errorMessage, errorCause
 
-          const errorDetails = await response.text()
-          const errorMessage = `
-                        HTTP error for ${response.url}\n
-                        ${response.status} - ${response.statusText}\n
-                        ${errorDetails}
-                    `
-          return new TogglError(errorMessage)
+            if (retries >= this.maxRetries) {
+              errorMessage = `Max attempts reached for ${options.method} ${response.url}: ${response.status} ${errorDetails}`
+              errorCause = 'Max attempts reached'
+            } else {
+              errorMessage = `${options.method} ${response.url}: ${response.status} ${errorDetails}`
+              errorCause = response.status
+            }
+
+            return new TogglError(errorMessage, { cause: errorCause })
+          }
         }
 
         let responseData
@@ -114,9 +119,7 @@ export class TogglTrackAPI extends TogglEmitter {
         this.cache.set(sourceFunctionName, cacheKey, responseData)
         return responseData
       } catch (error) {
-        if (!(error instanceof TogglError) || retries === this.maxRetries - 1) {
-          return new TogglError(error.message)
-        }
+        return new TogglError(error.message, { cause: error.cause })
       }
     }
   }
