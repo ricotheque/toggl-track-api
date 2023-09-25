@@ -78,4 +78,16 @@ export class TogglTrackUsers extends TogglTrackAPI {
 
     return organizationUsers
   }
+
+  async getByEmail (email) {
+    const organizationUsers = await this.getForOrganization()
+
+    for (const organizationUser of organizationUsers) {
+      if (organizationUser.email === email) {
+        return organizationUser
+      }
+    }
+
+    return false
+  }
 }

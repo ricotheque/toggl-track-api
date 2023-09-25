@@ -8,8 +8,8 @@ An (unofficial!) work-in-progress JS client for https://toggl.com/track/.
 const toggl = new TogglTrack({
   // Get your api token from track.toggl.com/profile.
   apiToken: '[your_token]',
-  workspaceId: '1234567',
   organizationId: '1234567',
+  workspaceId: '1234567',
   // Caches API output to reduce requests. Required boilerplate.
   cache: new TogglCache()
   // Wait time between API requests. Default is 1000. Can never be lower than 1000.
@@ -39,8 +39,8 @@ console.log(projects2)
 ## Available actions
 
 | Entity             | Create | Read All | Read One | Update | Delete |
-| ------------------ | ------ | -------- | -------- | ------ | ------ |
-| Projects           |        | ✓        | ✓        |        |        |
-| Clients            |        | ✓        | ✓        |        |        |
-| Organization Users |        | ✓        |          |        |        |
-| Tags               | ✓      | ✓        | ✓        |        | ✓      |
+| ------------------ | :----: | :------: | :------: | :----: | :----: |
+| Projects           |        |    ✓     |    ✓     |        |        |
+| Clients            |        |    ✓     |    ✓     |        |        |
+| Organization Users |        |    ✓     |    ✓     |        |        |
+| Tags               |   ✓    |    ✓     |    ✓     |        |   ✓    |
