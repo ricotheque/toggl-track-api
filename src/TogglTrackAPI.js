@@ -116,7 +116,11 @@ export class TogglTrackAPI extends TogglEmitter {
           responseData = await response.text()
         }
 
-        this.cache.set(sourceFunctionName, cacheKey, responseData)
+        // Cache GET and POST requests
+        if (method === 'GET' || method === 'POST') {
+          this.cache.set(sourceFunctionName, cacheKey, responseData)
+        }
+
         return responseData
       } catch (error) {
         return new TogglError(error.message, { cause: error.cause })
