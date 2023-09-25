@@ -5,6 +5,7 @@ import { TogglTrackClients } from './TogglTrackClients'
 import { TogglTrackTags } from './TogglTrackTags'
 import { TogglTrackUserGroups } from './TogglTrackUserGroups'
 import { TogglCache } from './TogglCache'
+import { TogglError } from './TogglError'
 
 export class TogglTrack {
   constructor (options) {
@@ -32,5 +33,9 @@ export class TogglTrack {
         this[key].on('*', callback)
       }
     }
+  }
+
+  static get error () {
+    return TogglError
   }
 }
