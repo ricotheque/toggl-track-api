@@ -28,6 +28,14 @@ export class TogglCache {
     delete this.cache[functionName]
   }
 
+  clearForClass (functionClass) {
+    for (const key of Object.keys(this.cache)) {
+      if (key.includes(functionClass)) {
+        delete this.cache[key]
+      }
+    }
+  }
+
   clearAll () {
     this.cache = {}
   }
