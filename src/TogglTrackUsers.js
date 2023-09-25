@@ -90,4 +90,29 @@ export class TogglTrackUsers extends TogglTrackAPI {
 
     return false
   }
+
+  async convertEmailsToUserIds (userEmails) {
+    // Assert that userEmails should be an array
+    if (!Array.isArray(userEmails)) {
+      userEmails = [userEmails]
+    }
+
+    const userIds = []
+
+    for (const userEmail of userEmails) {
+      const nextUser = await this.getByEmail(userEmail)
+
+      if (nextUser !== false) {
+        const nextUserId = nextUser.user_id
+
+        userIds.push(nextUserId)
+      }
+    }
+
+    if (userIds.length <= 0) {
+      return false
+    } else {
+      return userIds
+    }
+  }
 }
