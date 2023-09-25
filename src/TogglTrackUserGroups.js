@@ -58,13 +58,23 @@ export class TogglTrackUserGroups extends TogglTrackAPI {
 
     const newUserIds = [...new Set([...currentGroupUserIds, ...userIds])]
 
-    const userEmailsString = userEmails.join(', ')
-    this.emit(
-      'TogglTrackUserGroups.addUsers()',
-      `Attempting to add ${userEmailsString} from user group ${groupName}`
-    )
+    if (
+      newUserIds.length !== currentGroupUserIds.length &&
+      newUserIds.length > 0
+    ) {
+      const userEmailsString = Array.isArray(userEmails)
+        ? userEmails.join(', ')
+        : userEmails
 
-    return await this.setUsers(groupName, newUserIds)
+      this.emit(
+        'TogglTrackUserGroups.addUsers()',
+        `Attempting to add ${userEmailsString} from user group ${groupName}`
+      )
+
+      return await this.setUsers(groupName, newUserIds)
+    } else {
+      return false
+    }
   }
 
   async removeUsers (groupName, userEmails) {
@@ -76,8 +86,13 @@ export class TogglTrackUserGroups extends TogglTrackAPI {
       (user) => !userIdsToRemove.has(user)
     )
 
-    if (newUserIds.length > 0) {
-      const userEmailsString = userEmails.join(', ')
+    if (
+      newUserIds.length !== currentGroupUserIds.length &&
+      newUserIds.length > 0
+    ) {
+      const userEmailsString = Array.isArray(userEmails)
+        ? userEmails.join(', ')
+        : userEmails
       this.emit(
         'TogglTrackUserGroups.removeUsers()',
         `Attempting to remove ${userEmailsString} from user group ${groupName}`
