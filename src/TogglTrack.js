@@ -4,17 +4,20 @@ import { TogglEmitter } from './TogglEmitter'
 import { TogglTrackClients } from './TogglTrackClients'
 import { TogglTrackTags } from './TogglTrackTags'
 import { TogglTrackUserGroups } from './TogglTrackUserGroups'
+import { TogglCache } from './TogglCache'
 
 export class TogglTrack {
   constructor (options) {
-    const { apiToken, workspaceId, organizationId, waitInMilliseconds, cache } =
+    const { apiToken, workspaceId, organizationId, waitInMilliseconds } =
       options
 
     this.apiToken = apiToken
     this.workspaceId = workspaceId
     this.organizationId = organizationId
     this.waitInMilliseconds = waitInMilliseconds
-    this.cache = cache
+
+    options.cache = new TogglCache()
+    this.cache = options.cache
 
     this.clients = new TogglTrackClients(options)
     this.projects = new TogglTrackProjects(options, this.clients)
