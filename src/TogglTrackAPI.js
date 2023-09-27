@@ -47,7 +47,6 @@ export class TogglTrackAPI extends TogglEmitter {
       )
     }
 
-    // For GET and POST requests, return cached data if it exists
     const workspaceId = this.workspaceId
     const organizationId = this.organizationId
     const cacheKey = this.cache.makeHash({
@@ -59,7 +58,7 @@ export class TogglTrackAPI extends TogglEmitter {
       organizationId
     })
 
-    if (method === 'GET' || method === 'POST') {
+    if (await this.shouldRequestBeCached(method, endpoint)) {
       if (this.cache.has(sourceFunctionName, cacheKey)) {
         return this.cache.get(sourceFunctionName, cacheKey)
       }
@@ -80,7 +79,6 @@ export class TogglTrackAPI extends TogglEmitter {
     let retries = 0
 
     while (true) {
-      // Delay requests to minimize 429 errors
       await sleep(this.waitInMilliseconds)
 
       try {
@@ -116,8 +114,7 @@ export class TogglTrackAPI extends TogglEmitter {
           responseData = await response.text()
         }
 
-        // Cache GET and POST requests
-        if (method === 'GET' || method === 'POST') {
+        if (await this.shouldRequestBeCached(method, endpoint)) {
           this.cache.set(sourceFunctionName, cacheKey, responseData)
         }
 
@@ -142,5 +139,20 @@ export class TogglTrackAPI extends TogglEmitter {
     )
 
     return this.baseUrl + finalEndpoint
+  }
+
+  async shouldRequestBeCached (method, endpoint) {
+    if (method === 'GET') {
+      return true
+    }
+
+    if (
+      method === 'POST' &&
+      endpoint.includes('/reports/api/v3/workspace/{{workspace_id}}/')
+    ) {
+      return true
+    }
+
+    return false
   }
 }
