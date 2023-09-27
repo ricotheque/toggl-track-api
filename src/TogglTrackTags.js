@@ -61,4 +61,27 @@ export class TogglTrackTags extends TogglTrackAPI {
 
     return result
   }
+
+  async rename (oldTagName, newTagName) {
+    const tag = await this.getByName(oldTagName)
+
+    if (tag === false || typeof tag.id === 'undefined') {
+      return false
+    }
+
+    const result = await this.restRequest(
+      'PUT',
+      `/api/v9/workspaces/{{workspace_id}}/tags/${tag.id}`,
+      { name: newTagName },
+      'json',
+      'TogglTrackTags.rename()'
+    )
+
+    this.emit(
+      'TogglTrackTags.rename()',
+      `Renaming tag ${oldTagName} to ${newTagName}`
+    )
+
+    return result
+  }
 }

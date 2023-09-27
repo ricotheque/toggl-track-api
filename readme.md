@@ -69,6 +69,6 @@ toggl.cache.clearFunction('TogglTrackProjects')
 | ------------------ | :----: | :------: | :------: | :----: | :----: |
 | Projects           |        |    ✓     |    ✓     |        |        |
 | Clients            |   ✓    |    ✓     |    ✓     |   ✓    |   ✓    |
-| Tags               |   ✓    |    ✓     |    ✓     |        |   ✓    |
+| Tags               |   ✓    |    ✓     |    ✓     |   ✓    |   ✓    |
 | Organization Users |        |    ✓     |    ✓     |        |        |
 | User Groups        |        |    ✓     |    ✓     |   ✓    |        |
