@@ -38,12 +38,14 @@ export class TogglTrackAPI extends TogglEmitter {
     // Assert proper arguments
     if (!['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
       throw new TogglError(
-        `TogglTrackAPI.restRequest(): Invalid method "${method}" specified`
+        `TogglTrackAPI.restRequest(): Invalid method "${method}" specified`,
+        { cause: 'Dev Error' }
       )
     }
     if (sourceFunctionName === '') {
       throw new TogglError(
-        'TogglTrackAPI.restRequest(): Please specify a sourceFunctionName'
+        'TogglTrackAPI.restRequest(): Please specify a sourceFunctionName',
+        { cause: 'Dev Error' }
       )
     }
 
