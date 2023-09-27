@@ -68,7 +68,7 @@ toggl.cache.clearFunction('TogglTrackProjects')
 | Entity             | Create | Read All | Read One | Update | Delete |
 | ------------------ | :----: | :------: | :------: | :----: | :----: |
 | Projects           |        |    ✓     |    ✓     |        |        |
-| Clients            |        |    ✓     |    ✓     |        |        |
+| Clients            |   ✓    |    ✓     |    ✓     |   ✓    |   ✓    |
 | Tags               |   ✓    |    ✓     |    ✓     |        |   ✓    |
 | Organization Users |        |    ✓     |    ✓     |        |        |
 | User Groups        |        |    ✓     |    ✓     |   ✓    |        |
