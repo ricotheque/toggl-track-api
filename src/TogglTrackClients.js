@@ -1,16 +1,12 @@
-import { TogglTrackAPI } from './TogglTrackAPI'
+import { TogglTrackClient } from './TogglTrackClient'
 import { objectToQueryString } from './utils'
 
-export class TogglTrackClients extends TogglTrackAPI {
+export class TogglTrackClients extends TogglTrackClient {
   async getAll (options = {}) {
     const queryString = objectToQueryString(options)
 
-    const clients = await this.restRequest(
-      'GET',
-      '/api/v9/workspaces/{{workspace_id}}/clients?' + queryString,
-      null,
-      'json',
-      'TogglTrackClients.getAll()'
+    const clients = await this.request(
+      '/workspaces/{{workspace_id}}/clients?' + queryString
     )
 
     return clients
@@ -25,10 +21,6 @@ export class TogglTrackClients extends TogglTrackAPI {
       }
     }
 
-    this.emit(
-      'TogglTrackProjects.getById()',
-      `Couldn't find client "${clientName}"`
-    )
     return false
   }
 
@@ -40,11 +32,6 @@ export class TogglTrackClients extends TogglTrackAPI {
         return client
       }
     }
-
-    this.emit(
-      'TogglTrackProjects.getById()',
-      `Couldn't find client id ${clientId}`
-    )
     return false
   }
 

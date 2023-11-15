@@ -1,18 +1,19 @@
-const { TogglTrack } = require('../src/TogglTrack')
+import { TogglTrackClient } from '../src/TogglTrackClient'
 
-const toggl = new TogglTrack({
-  // Get your api token from track.toggl.com/profile.
-  apiToken: '[your_token]',
-  organizationId: '1234567',
-  workspaceId: '1234567',
-  // Wait time between API requests. Default is 1000. Can never be lower than 1000.
-  waitInMilliseconds: 1000,
-  // Maximum times API requests are attempted before an error is returned. Default is 3. Can never be lower than 1.
-  maxRetries: 3
-})
+main()
 
-// Use the class emitters to surface progress messages
-toggl.registerListeners((eventName, data) => {
-  console.log(`${eventName}:`, data)
-  document.getElementById('status').textContent = data
-})
+async function main () {
+  const client = new TogglTrackClient({
+    apiToken: '[token]',
+    messageCallback: update
+  })
+
+  const data = await client.request('/me')
+  console.log(data)
+}
+
+async function update (message, source) {
+  console.log(source)
+
+  document.querySelector('#status').innerText = message
+}
