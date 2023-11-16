@@ -1,32 +1,51 @@
 import { TogglTrackClients } from '../src/TogglTrackClients'
+import { TogglTrackProjects } from '../src/TogglTrackProjects'
 
 window.addEventListener('load', function () {
   document.getElementById('start').addEventListener('click', main)
 })
 
 async function main () {
+  const apiToken = '[token]'
+  const workspaceId = '[workspaceId]'
+
+  let result
+
+  // Client tests
   const clients = new TogglTrackClients({
-    apiToken: '[token]',
-    workspaceId: '5972963',
+    apiToken,
+    workspaceId,
     messageCallback: update
   })
 
-  // const data = await clients.getById(64131782)
+  // result = await clients.create('Test Client 1234ABCD')
+  // console.log(result)
 
-  let data = await clients.create('Grupo Concal2')
-  console.log(data)
+  // result = await clients.rename(
+  //   'Test Client 1234ABCD',
+  //   'Test Client 1234ABCD-2'
+  // )
+  // console.log(result)
 
-  data = await clients.rename('Grupo Concal2', 'Grupo Concal3')
-  console.log(data)
+  // result = await clients.archive('Test Client 1234ABCD-2')
+  // console.log(result)
 
-  data = await clients.archive('Grupo Concal3')
-  console.log(data)
+  // result = await clients.restore('Test Client 1234ABCD-2')
+  // console.log(result)
 
-  data = await clients.restore('Grupo Concal3')
-  console.log(data)
+  // result = await clients.delete('Test Client 1234ABCD-2')
+  // console.log(result)
 
-  data = await clients.delete('Grupo Concal3')
-  console.log(data)
+  // Project tests
+  const projects = new TogglTrackProjects({
+    apiToken,
+    workspaceId,
+    messageCallback: update,
+    clients
+  })
+
+  result = await projects.getAllQuickly()
+  console.log(result)
 }
 
 async function update (message, source) {

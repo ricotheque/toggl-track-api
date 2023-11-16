@@ -1,55 +1,61 @@
-import { TogglTrackAPI } from './TogglTrackAPI'
+import { TogglTrackClient } from './TogglTrackClient'
+import { TogglTrackClients } from './TogglTrackClients'
 import { objectToQueryString } from './utils'
 
-export class TogglTrackProjects extends TogglTrackAPI {
-  constructor (options, clients) {
+export class TogglTrackProjects extends TogglTrackClient {
+  constructor (options) {
     super(options)
-    this.clients = clients
-  }
 
-  async getAll (options = {}) {
-    let nextPage = 1
-    let allProjects = []
-
-    while (true) {
-      options.page = nextPage
-
-      const queryString = objectToQueryString(options)
-
-      const nextProjects = await this.restRequest(
-        'GET',
-        '/api/v9/workspaces/{{workspace_id}}/projects?' + queryString,
-        null,
-        'json',
-        'TogglTrackProjects.getAll()'
+    if (this.config.clients instanceof TogglTrackClients === false) {
+      throw new Error(
+        'You need to pass an instance of TogglTrackClients when creating a new instance of TogglTrackProjects.'
       )
-
-      if (
-        nextProjects &&
-        Array.isArray(nextProjects) &&
-        nextProjects.length > 0
-      ) {
-        allProjects = allProjects.concat(nextProjects)
-      } else {
-        break
-      }
-
-      this.emit(
-        'TogglTrackProjects.getAll()',
-        `Retrieved project page ${nextPage}`
-      )
-
-      nextPage++
-
-      if (nextPage >= 1000) {
-        // No way a workspace will ever have more than 151K projects
-        console.warn('Maximum pages reached.')
-        break
-      }
     }
-
-    return allProjects
   }
+
+  // async getAll (options = {}) {
+  //   let nextPage = 1
+  //   let allProjects = []
+
+  //   while (true) {
+  //     options.page = nextPage
+
+  //     const queryString = objectToQueryString(options)
+
+  //     const nextProjects = await this.restRequest(
+  //       'GET',
+  //       '/api/v9/workspaces/{{workspace_id}}/projects?' + queryString,
+  //       null,
+  //       'json',
+  //       'TogglTrackProjects.getAll()'
+  //     )
+
+  //     if (
+  //       nextProjects &&
+  //       Array.isArray(nextProjects) &&
+  //       nextProjects.length > 0
+  //     ) {
+  //       allProjects = allProjects.concat(nextProjects)
+  //     } else {
+  //       break
+  //     }
+
+  //     this.emit(
+  //       'TogglTrackProjects.getAll()',
+  //       `Retrieved project page ${nextPage}`
+  //     )
+
+  //     nextPage++
+
+  //     if (nextPage >= 1000) {
+  //       // No way a workspace will ever have more than 151K projects
+  //       console.warn('Maximum pages reached.')
+  //       break
+  //     }
+  //   }
+
+  //   return allProjects
+  // }
 
   async getAllQuickly (options = {}) {
     let nextProjectId = 0
@@ -58,16 +64,18 @@ export class TogglTrackProjects extends TogglTrackAPI {
     let allProjects = []
 
     while (true) {
-      Object.assign(options, {
+      const fetchOptions = {
+        ...options,
         start: nextProjectId,
-        page_size: 2000
-      })
-      const nextProjects = await this.restRequest(
-        'POST',
+        page_size: 200
+      }
+
+      const nextProjects = await this.request(
         '/reports/api/v3/workspace/{{workspace_id}}/filters/projects',
-        options,
-        'json',
-        'TogglTrackProjects.getAllQuickly()'
+        {
+          method: 'POST',
+          body: JSON.stringify(fetchOptions)
+        }
       )
 
       if (
@@ -88,9 +96,9 @@ export class TogglTrackProjects extends TogglTrackAPI {
 
       iterations++
 
-      this.emit(
-        'TogglTrackProjects.getAllQuickly()',
-        `Quickly retrieved project page ${iterations}`
+      this.emitMessage(
+        `Quickly retrieved project page ${iterations}`,
+        'TogglTrackProjects.getAllQuickly()'
       )
 
       if (iterations >= 1000) {

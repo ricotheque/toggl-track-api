@@ -10,7 +10,7 @@ export class TogglTrackClient {
       // organizationId: '1234',
       // workspaceId: '1234,
 
-      server: 'https://api.track.toggl.com/api/v9',
+      server: 'https://api.track.toggl.com',
       delayBetweenRequests: 1000,
 
       messageCallback: () => {},

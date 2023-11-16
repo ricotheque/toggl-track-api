@@ -6,7 +6,7 @@ export class TogglTrackClients extends TogglTrackClient {
     const queryString = objectToQueryString(options)
 
     const clients = await this.request(
-      '/workspaces/{{workspace_id}}/clients?' + queryString
+      '/api/v9/workspaces/{{workspace_id}}/clients?' + queryString
     )
 
     return clients
@@ -42,7 +42,7 @@ export class TogglTrackClients extends TogglTrackClient {
     )
 
     const newClient = await this.request(
-      '/workspaces/{{workspace_id}}/clients',
+      '/api/v9/workspaces/{{workspace_id}}/clients',
       {
         method: 'POST',
         body: JSON.stringify({
@@ -67,7 +67,7 @@ export class TogglTrackClients extends TogglTrackClient {
       'TogglTrackClients.delete()'
     )
     const deleteClient = await this.request(
-      '/workspaces/{{workspace_id}}/clients/' + clientToDelete.id,
+      '/api/v9/workspaces/{{workspace_id}}/clients/' + clientToDelete.id,
       {
         method: 'DELETE',
         responseType: ''
@@ -89,7 +89,7 @@ export class TogglTrackClients extends TogglTrackClient {
       'TogglTrackClients.rename()'
     )
     const renameClient = await this.request(
-      `/workspaces/{{workspace_id}}/clients/${clientToRename.id}`,
+      `/api/v9/workspaces/{{workspace_id}}/clients/${clientToRename.id}`,
       {
         method: 'PUT',
         body: JSON.stringify({
@@ -117,7 +117,7 @@ export class TogglTrackClients extends TogglTrackClient {
     )
 
     const archiveClient = await this.request(
-      `/workspaces/{{workspace_id}}/clients/${clientToArchive.id}/archive`,
+      `/api/v9/workspaces/{{workspace_id}}/clients/${clientToArchive.id}/archive`,
       { method: 'POST' }
     )
 
@@ -140,7 +140,7 @@ export class TogglTrackClients extends TogglTrackClient {
     )
 
     const restoreClient = await this.request(
-      `/workspaces/{{workspace_id}}/clients/${clientToRestore.id}/restore`,
+      `/api/v9/workspaces/{{workspace_id}}/clients/${clientToRestore.id}/restore`,
       {
         method: 'POST',
         body: JSON.stringify({ restore_all_projects: restoreAllProjects })
