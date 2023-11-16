@@ -1,4 +1,5 @@
 import { Buffer } from 'buffer'
+import { sleep } from './utils'
 
 const fetch = require('fetch-retry')(global.fetch)
 
@@ -10,7 +11,7 @@ export class TogglTrackClient {
       // workspaceId: '1234,
 
       server: 'https://api.track.toggl.com/api/v9',
-      method: 'GET',
+      delayBetweenRequests: 1000,
 
       messageCallback: () => {},
       retries: 3,
@@ -32,13 +33,39 @@ export class TogglTrackClient {
   }
 
   async request (endpoint, options = {}) {
+    await sleep(this.config.delayBetweenRequests)
+
     try {
       if (typeof endpoint !== 'string' || endpoint.trim() === '') {
         throw new Error('Invalid endpoint: must be a non-empty string.')
       }
 
-      endpoint = endpoint.replaceAll('{{workspace_id}}', this.workspaceId)
-      endpoint = endpoint.replaceAll('{{organization_id}}', this.organizationId)
+      if (
+        endpoint.includes('{{workspace_id}}') &&
+        /^\d+$/.test(this.config.workspaceId) !== true
+      ) {
+        throw new Error(
+          'Invalid workspaceId: must be a non-empty string containing only digits.'
+        )
+      }
+
+      if (
+        endpoint.includes('{{organization_id}}') &&
+        /^\d+$/.test(this.config.organizationId) !== true
+      ) {
+        throw new Error(
+          'Invalid organizationId: must be a non-empty string containing only digits.'
+        )
+      }
+
+      endpoint = endpoint.replaceAll(
+        '{{workspace_id}}',
+        this.config.workspaceId
+      )
+      endpoint = endpoint.replaceAll(
+        '{{organization_id}}',
+        this.config.organizationId
+      )
 
       endpoint = this.config.server + endpoint
 
@@ -48,7 +75,6 @@ export class TogglTrackClient {
 
       const fetchOptions = {
         ...options,
-        method: this.config.method,
         headers: {
           Authorization: `Basic ${credentials}`,
           // 'Content-Type': 'application/json',

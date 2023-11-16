@@ -36,15 +36,20 @@ export class TogglTrackClients extends TogglTrackClient {
   }
 
   async create (newClientName) {
-    const newClient = await this.restRequest(
-      'POST',
-      '/api/v9/workspaces/{{workspace_id}}/clients',
-      {
-        name: newClientName,
-        wid: parseInt(this.workspaceId)
-      },
-      'json',
+    this.emitMessage(
+      `Creating client "${newClientName}"...`,
       'TogglTrackClients.create()'
+    )
+
+    const newClient = await this.request(
+      '/workspaces/{{workspace_id}}/clients',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          name: newClientName,
+          wid: parseInt(this.config.workspaceId)
+        })
+      }
     )
 
     return newClient
@@ -57,12 +62,16 @@ export class TogglTrackClients extends TogglTrackClient {
       return false
     }
 
-    const deleteClient = await this.restRequest(
-      'DELETE',
-      '/api/v9/workspaces/{{workspace_id}}/clients/' + clientToDelete.id,
-      null,
-      'text',
+    this.emitMessage(
+      `Deleting client "${nameOfClientToDelete}"...`,
       'TogglTrackClients.delete()'
+    )
+    const deleteClient = await this.request(
+      '/workspaces/{{workspace_id}}/clients/' + clientToDelete.id,
+      {
+        method: 'DELETE',
+        responseType: ''
+      }
     )
 
     return deleteClient
@@ -75,15 +84,19 @@ export class TogglTrackClients extends TogglTrackClient {
       return false
     }
 
-    const renameClient = await this.restRequest(
-      'PUT',
-      `/api/v9/workspaces/{{workspace_id}}/clients/${clientToRename.id}`,
-      {
-        name: newClientName,
-        wid: parseInt(this.workspaceId)
-      },
-      'json',
+    this.emitMessage(
+      `Renaming client "${nameOfClientToRename}" to "${newClientName}"...`,
       'TogglTrackClients.rename()'
+    )
+    const renameClient = await this.request(
+      `/workspaces/{{workspace_id}}/clients/${clientToRename.id}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify({
+          name: newClientName,
+          wid: parseInt(this.config.workspaceId)
+        })
+      }
     )
 
     return renameClient
@@ -98,13 +111,14 @@ export class TogglTrackClients extends TogglTrackClient {
     ) {
       return false
     }
-
-    const archiveClient = await this.restRequest(
-      'POST',
-      `/api/v9/workspaces/{{workspace_id}}/clients/${clientToArchive.id}/archive`,
-      null,
-      'json',
+    this.emitMessage(
+      `Archiving client "${nameOfClientToArchive}"...`,
       'TogglTrackClients.archive()'
+    )
+
+    const archiveClient = await this.request(
+      `/workspaces/{{workspace_id}}/clients/${clientToArchive.id}/archive`,
+      { method: 'POST' }
     )
 
     return archiveClient
@@ -120,12 +134,17 @@ export class TogglTrackClients extends TogglTrackClient {
       return false
     }
 
-    const restoreClient = await this.restRequest(
-      'POST',
-      `/api/v9/workspaces/{{workspace_id}}/clients/${clientToRestore.id}/restore`,
-      { restore_all_projects: restoreAllProjects },
-      'json',
-      'TogglTrackClients.archive()'
+    this.emitMessage(
+      `Restoring client "${nameOfClientToRestore}"...`,
+      'TogglTrackClients.restore()'
+    )
+
+    const restoreClient = await this.request(
+      `/workspaces/{{workspace_id}}/clients/${clientToRestore.id}/restore`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ restore_all_projects: restoreAllProjects })
+      }
     )
 
     return restoreClient
